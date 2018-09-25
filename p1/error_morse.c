@@ -2,23 +2,30 @@
 #include <stdio.h>//Pel joc de proves (borrar al acabar)
 
 
-check add_check(char p[]){
-  uint16_t suma,carry,rest;
+char * add_check(char p[]){
+  uint16_t suma=0,carry,rest;
   uint8_t che_bin;
   check che_hex;
+  int j=0;
+  static char s_check[254];
   
   for (uint8_t i=0; p[i]; i++){ // funcio sumadora checksum
     if ((p[i]>='A' && p[i]<='Z') || (p[i]>='0' && p[i]<='9') || (p[i]==' ')){
       suma+=p[i];
+      j++;
+      
     }
   }
   rest = suma & 0x00FF;
   carry = suma & 0xFF00;
   carry = carry >> 8;
   che_bin = ~(carry + rest); // checksum en binari
-
   che_hex=byte2hex(che_bin);
-  return che_hex;
+  p[j] = che_hex.H;
+  p[j+1] = che_hex.L;
+  s_check[0]=che_hex.H;
+  s_check[1]=che_hex.L;
+  return s_check;
 }
 
 
@@ -35,7 +42,6 @@ static check byte2hex(uint8_t byte){
     L+=55;
   else
     L+=48;
-  //printf("%c %c\n",H,L);
   hex.H=H;
   hex.L=L;
   return hex;
@@ -63,14 +69,17 @@ static uint8_t hex2byte(check hex){
 }
 
 
-/*
+
 void main(){
   check hexad;
   //hexad.L=0x0F;
   //hexad.H=0x00;
   //printf("%i\n",hex2byte(hexad)); // prova hex2byte
 
-  uint8_t byt= 0b01010101;
-  
-  printf("%i\n",hex2byte(byte2hex(byt))); // prova byte2hex
-  }*/
+  //uint8_t byt= 0b01010101;
+  //printf("%i\n",hex2byte(byte2hex(byt))); // prova byte2hex
+  char p[255]="A B";
+  printf("%s 1\n",p);
+  printf("%s 2\n", add_check(p));
+  printf("%s 3\n", p);
+}
