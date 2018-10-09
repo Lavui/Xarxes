@@ -1,10 +1,17 @@
 #include "error_morse.h"
+#include <string.h>
+#include <util/crc16.h>
 #include <stdio.h>//Pel joc de proves (borrar al acabar)
 
+#define INICI_CRC 0
 
-char * add_check(char p[]){
+ /*####################  Checksum   ###############################*/
+
+check add_check(char p[]){
   uint16_t suma=0,carry,rest;
+  
   uint8_t che_bin;
+  
   check che_hex;
   int j=0;
   static char s_check[254];
@@ -21,15 +28,58 @@ char * add_check(char p[]){
   carry = carry >> 8;
   che_bin = ~(carry + rest); // checksum en binari
   che_hex=byte2hex(che_bin);
+  
   p[j] = che_hex.H;
   p[j+1] = che_hex.L;
+  p[j+2] = '\0';
   s_check[0]=che_hex.H;
   s_check[1]=che_hex.L;
-  return s_check;
+  
+  return che_hex;
 }
 
 
-static check byte2hex(uint8_t byte){
+check get_redun(char p[]){
+  int longi=0;
+  check ex;
+  while(p[longi]!='\0')
+    longi++;
+
+  ex.H=p[longi-2];
+  ex.L=p[longi-1];
+  p[longi-2]='\0';
+  return ex;
+}
+
+
+bool check_is_ok(char strche[]){  
+  check c1,c2;
+  c1 = get_redun(strche);
+  c2 = add_check(strche);
+  if (c1.H == c2.H && c1.L == c2.L){
+    printf("is ok\n");
+    return true;
+   
+      }
+  else
+    printf("NO ok\n");
+    return false;
+}
+
+/*####################  CRC   ###############################*/
+
+check add_crc(char p[]){
+  uint8_t  crc=INICI_CRC, j=0;
+  check crc_hex;
+
+  
+}
+
+
+
+/*##############  funcions auxiliars   #############################*/
+
+ static check byte2hex(uint8_t byte){
   check hex;
   uint8_t H=byte>>4;
   uint8_t L=byte & 0b00001111;
@@ -68,6 +118,7 @@ static uint8_t hex2byte(check hex){
   return maj|men;
 }
 
+/*#############  main de proves   ############################*/
 
 
 void main(){
@@ -78,8 +129,10 @@ void main(){
 
   //uint8_t byt= 0b01010101;
   //printf("%i\n",hex2byte(byte2hex(byt))); // prova byte2hex
-  char p[255]="A B";
-  printf("%s 1\n",p);
-  printf("%s 2\n", add_check(p));
-  printf("%s 3\n", p);
+  char p[255]="HOLA";
+  //printf("%s 1\n",p);
+  //printf("%s 3\n", p);
+  add_check(p);
+  check_is_ok(p);
 }
+
