@@ -57,12 +57,12 @@ bool check_is_ok(char strche[]){
   c1 = get_redun(strche);
   c2 = add_check(strche);
   if (c1.H == c2.H && c1.L == c2.L){
-    printf("is ok\n");
+    printf("is ok (CHK)\n");
     return true;
    
       }
   else
-    printf("NO ok\n");
+    printf("NO ok (CHK)\n");
     return false;
 }
 
@@ -72,10 +72,41 @@ check add_crc(char p[]){
   uint8_t  crc=INICI_CRC, j=0;
   check crc_hex;
 
-  
+  while(p[j]!='\0'){
+    crc=_crc_ibutton_update(crc,p[j]);
+    j++
+  }
+
+  if (p[0]!='\0'){
+    crc_hrx=byte2hex(crc);
+    p[j]=crc_hex.H;
+    p[j+1]=crc_hex.L;
+    p[j+3]='\0';
+  }
+
+  else{
+    crc_hex.H='\0';
+    crc_hex.L='\0';
+  }
+  //printf("")
+  return crc_hex;
 }
 
 
+bool crc_is_ok(char p[]){
+  check c1,c2;
+
+  c1=get_redun(p);
+  c2=add_crc(p);
+  if (c1.H == c2.H && c1.L == c2.L){
+    printf("is ok (CRC)\n");
+    return true;
+   
+  }
+  else
+    printf("NO ok (CRC)\n");
+  return false;
+}
 
 /*##############  funcions auxiliars   #############################*/
 
