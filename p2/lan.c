@@ -41,14 +41,22 @@ void on_lan_received(lan_callback_t l){
 }
 static void rep_trama(void){
   //Funcio interna del programa
-  /*Hem de fer primer un ether_block_get que ens llegira el contingut del block_morse rebut (el block_morse es el missatge
-    en la construcció del ether_block_get també hi ha d'haver el receptor*/
-  ether_block_get(missatge+receptor(/*tan el receptor com transmissor s'ha creat un static que té com a struct el lanpdu_t i hem creat el tx_pdu i rx_pdu*/));
-  if redundancia (/*utilitzar la funcio del crc_is_ok(missatge+receptor)*/){
-      if(/*missatge es per mi utilitzar el struct creat del lanpdu_t*/){
-	get_redun(missatge+receptor);
+  /*Hem de fer primer un ether_block_get que ens llegira el contingut del block_morse rebut (el block_morse es el missatge en la construcció del ether_block_get també hi ha d'haver el receptor*/
+  ether_block_get((block_morse)&rx_pdu);/*tan el receptor com transmissor s'ha creat un static que té com a struct el lanpdu_t i hem creat el tx_pdu i rx_pdu*/
+  if crc_is_ok((block_morse)&rx_pdu){
+      if(rx_pdu.desti==tx_pdu.origen){
+	get_redun((block_morse)&rx_pdu);
 	lan_cb();
       }
     }
   return;
+}
+
+
+uint8_t lan_block_get(missatge_lan_t m){
+  /*retorna l'adreça del node que ha enviat el missatge (node del tx)*/
+  for(uint8_t con=0; rx_pdu.payload[con]!='\0'; con++)
+    m[con]=rx_pdu.payload[con];
+  m[con]='\0';
+  return rx_pdu.origen;
 }
