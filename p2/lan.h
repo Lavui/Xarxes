@@ -12,8 +12,6 @@ bool lan_can_put(void);
 
 void lan_block_put(const missatge_lan_t m, uint8_t nd);
 
-//bool lan_can_get(void);
-
 uint8_t lan_block_get(missatge_lan_t m);
 
 void on_lan_received(lan_callback_t l);

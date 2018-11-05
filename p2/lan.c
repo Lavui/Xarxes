@@ -6,7 +6,7 @@
 
 static void envia_trama(void); //uniques d'aqui
 static void rep_trama(void);
-//static void reintents(void);
+static void reintents(void);
 
 typedef struct {
   uint8_t origen;
@@ -32,6 +32,11 @@ void lan_init(uint8_t no){
   timerevery(500,reintents);
   //tinc el dubte de si elsestats de la maquina d'estats els necessiteeem, diria que si ja que de la transmissio nomes hem canviar el numero d'intents, static enum comentat adalt
   //estat=esperant;
+  return;
+}
+
+bool lan_can_put(void){
+  return;
 }
 
 void on_lan_received(lan_callback_t l){
@@ -39,6 +44,20 @@ void on_lan_received(lan_callback_t l){
   lan_cb=l;
   return;
 }
+
+uint8_t lan_block_get(missatge_lan_t m){
+  /*retorna l'adreça del node que ha enviat el missatge (node del tx)*/
+  for(uint8_t i=0; rx_pdu.payload[i]!='\0'; i++)
+    m[i]=rx_pdu.payload[i];
+  m[i]='\0';
+  return rx_pdu.origen;
+}
+
+void lan_block_put(const missatge_lan_t m, uint8_t nd){
+  
+}
+/*----------Funcions internes----------*/
+
 static void rep_trama(void){
   //Funcio interna del programa
   /*Hem de fer primer un ether_block_get que ens llegira el contingut del block_morse rebut (el block_morse es el missatge en la construcció del ether_block_get també hi ha d'haver el receptor*/
@@ -52,11 +71,6 @@ static void rep_trama(void){
   return;
 }
 
+static void reintents(void);
 
-uint8_t lan_block_get(missatge_lan_t m){
-  /*retorna l'adreça del node que ha enviat el missatge (node del tx)*/
-  for(uint8_t con=0; rx_pdu.payload[con]!='\0'; con++)
-    m[con]=rx_pdu.payload[con];
-  m[con]='\0';
-  return rx_pdu.origen;
-}
+//lanbuffer.H lanbuffer.L comprovaar si L i H estan lliures
