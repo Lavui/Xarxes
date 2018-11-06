@@ -20,7 +20,7 @@ typedef struct {
 
 static lanpdu_t tx_pdu,rx_pdu;
 static lan_callback_t lan_cb;
-//static enum {pendent_enviar,esperant} estat;
+static enum {pendent_enviar,esperant} estat;
 
 void lan_init(uint8_t no){
   timer_init();
@@ -32,6 +32,7 @@ void lan_init(uint8_t no){
   timerevery(500,reintents);
   //tinc el dubte de si elsestats de la maquina d'estats els necessiteeem, diria que si ja que de la transmissio nomes hem canviar el numero d'intents, static enum comentat adalt
   //estat=esperant;
+  estat=esperant;
   return;
 }
 
@@ -47,15 +48,41 @@ void on_lan_received(lan_callback_t l){
 
 uint8_t lan_block_get(missatge_lan_t m){
   /*retorna l'adreça del node que ha enviat el missatge (node del tx)*/
-  for(uint8_t i=0; rx_pdu.payload[i]!='\0'; i++)
+  uint8_t i;
+  for(i=0; rx_pdu.payload[i]!='\0'; i++)
     m[i]=rx_pdu.payload[i];
   m[i]='\0';
   return rx_pdu.origen;
 }
 
 void lan_block_put(const missatge_lan_t m, uint8_t nd){
-  
+  lanbuffer trama;
+  uint8_t i;
+  if ((lanbuffer.L.origen == 0 && lanbuffer.L.desti == 0 && lanbuffer.L.payload[0] =='\0')){
+    lanbuffer.L.desti=nd;
+    for(i=0; m[i]!='\0'; i++){
+      lanbuffer.L.payload[i]=m[i];
+    }
+    lanbuffer.L.payload[i]='\0';
+  }
+  else if ((lanbuffer.H.origen == 0 && lanbuffer.H.desti == 0 && lanbuffer.H.payload[0] =='\0')){
+    lanbuffer.H.desti=nd;
+    for(i=0; m[i]!='\0'; i++){
+      lanbuffer.H.payload[i]=m[i];
+    }
+    lanbuffer.H.payload[i]='\0';
+  }
+  else{
+    estat=pendent_enviar;
+    /*Com indiquem que no hem pogut carregar el missatge?*/
+  }
 }
+
+
+
+
+
+
 /*----------Funcions internes----------*/
 
 static void rep_trama(void){
@@ -71,6 +98,23 @@ static void rep_trama(void){
   return;
 }
 
-static void reintents(void);
-
+static void reintents(void){
+  if (lanbuffer.L.origen != 0 && lanbuffer.L.desti != 0){
+    if (ether_can_put()){
+      ether_block_put(lanbuffer.L);
+      lanbuffer.L.origen=0;
+      lanbuffer.L.desti=0;
+      lanbuffer.L.payload[0]='\0';
+      estat=esperant;
+    }
+  }
+  else if (lanbuffer.H.origen != 0 && lanbuffer.H.desti != 0){
+    if (ether_can_put()){
+      ether_block_put(lanbuffer.H);
+      lanbuffer.H.origen=0;
+      lanbuffer.H.desti=0;
+      lanbuffer.H.payload[0]='\0';
+      estat=esperant;
+    }
+}
 //lanbuffer.H lanbuffer.L comprovaar si L i H estan lliures
