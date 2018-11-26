@@ -1,0 +1,137 @@
+##############
+PRACTICA 4
+##############
+
+Sessio 2
+------------
+
+
+tres pc connectats mitjançant dos cables ethernet.
+un connectat a wiffi.
+
+amb els ethernet estem creant una xarxa local.
+
+acabem de crear dues sub-xarxes locals.
+
+xarxa yaser: 
+	identificador xarxa = 192.168.3.0/24
+	192.168.3.4
+xarxa david:
+	identificador xarxa  = 192.168.5.0/24
+	192.168.5.7
+
+
+amb la commanda : "ip address show" veiem les connexions amb ethernet que tenim (o wiffi)
+
+el david veu wlan0 (wiffi) i eth0 (ethernet)
+
+el yasser veu "el mateix"
+
+
+Donem adreça ip a les interficies.
+paco --> configurem: "sudo ip address add 192.168.3.10/24 dev eth1" pel yasser
+paco --> configurem: "sudo ip address add 192.168.5.10/24 dev eth0" pel david
+
+david --> configurem: "sudo ip address add 192.168.5.7/24 dev eth0"
+
+yaser --> configurem: "sudo ip address add 192.168.3.4/24 dev eth0"
+
+
+habilitem les interficies
+paco "sudo ifconfig eth0 up"
+paco "sudo ifconfig eth1 up"
+
+realitzem ping
+david --> "ping 192.168.5.10" pel paco 0.35ms
+david --> "ping 192.168.5.10" pel yaser no funciona ja que la maquina intermitja no es comporta ni com un switch ni com un router.
+
+convertim la maquina del paco en un switch.
+fem nomes una sub-xarxa:
+david --> configurem: "sudo ip address dell 192.168.5.7/24 dev eth0"
+david --> configurem: "sudo ip address add 192.168.3.7/24 dev eth0"
+paco --> configurem: "sudo ip address dell 192.168.3.10/24 dev eth1" pel yasser
+paco --> configurem: "sudo ip address dell 192.168.5.10/24 dev eth0" pel david
+
+fusionem dos interficies en una mitjançant un bridge
+"sudo brctl addbr br0"
+"sudo brctl addif br0 eth0"
+"sudo brctl addif br0 eth1"
+observem que estan fusionades
+"brctl show"
+
+sudo ifconfig br0 up (buscar l'equivalent d'aquesta commanda amb la eina "ip")
+
+ara el yasser i el david ja es poden parlar
+pd: el paco ja no te adressa ip perque es comporta com un switch
+
+
+creem adreça per la maquina del paco -->"sudo ip address add 192.168.3.10/24 dev br0"
+
+commanda "mtr" permet saber tots els salts per on van passant els diferents routers fins al final
+
+
+
+
+-----Convertirem la maquina del paco en router (eliminem switch)
+eliminem switch:
+paco --> "sudo ifconfig br0 down"
+paco --> "sudo brctl delbr br0"
+
+paco --> configurem: "sudo ip address add 192.168.3.10/24 dev eth1" pel yasser
+paco --> configurem: "sudo ip address add 192.168.5.10/24 dev eth0" pel david
+
+https://linuxconfig.org/how-to-turn-on-off-ip-forwarding-in-linux
+si a /etc/sysctl.conf hi posem "sudo sysctl -w net.ipv4.ip_forward=1"
+
+ara la maquina del paco ja es un router
+
+
+mirem la taula d'encaminament
+paco --> "ip route show"
+
+mirem la taula d'encaminament de yasser i david:
+david --> "ip route show"
+yasser --> "ip route show"
+
+david --> "sudo ip route add 192.168.3.0/24 dev eth0 via 192.168.5.10"
+yasser --> "sudo ip route add 192.168.5.0/24 dev eth0 via 192.168.5.10"
+
+jas estan enrutats.
+
+amb el "mtr" ja poden observar que els seus paquets passen per un router.
+
+
+
+
+
+
+
+-----fem que el yasser ofereixi internet al david
+yasser te internet, paco i david no
+
+1r- yasser
+	--> "sudo sysctl -w net.ipv4.ip_forward=1" 
+
+2n- paco
+	--> "sudo ip route add default dev eth1 via 192.168.3.4"
+	convertim el router del yasser en router nat, per tal de que qualsevol maquina connectada a internet reconnegui la ip del paco (sortira la del yasser)
+
+
+https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/4/html/Security_Guide/s1-firewall-ipt-fwd.html
+iptables es una eina que gestiona paquets de linux. pero tmb ens permet filtrar paquets.
+
+"sudo iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o wlan0 -j MASQUERADE"
+a la taula de nat despres de consultar el routeig, sustitueix l'adreça d'origen.
+
+
+perque el david es pugui connectar a internet:
+"sudo ip route add default dev eth0 via 192.168.5.10"
+
+ara david ja te internet.
+
+
+
+
+
+
+
