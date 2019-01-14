@@ -76,14 +76,12 @@ check add_crc(char p[]){
     crc=_crc_ibutton_update(crc,p[j]);
     j++
   }
-
   if (p[0]!='\0'){
     crc_hrx=byte2hex(crc);
     p[j]=crc_hex.H;
     p[j+1]=crc_hex.L;
     p[j+3]='\0';
   }
-
   else{
     crc_hex.H='\0';
     crc_hex.L='\0';
