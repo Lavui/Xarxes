@@ -1,0 +1,16 @@
+###########
+Practica 4.2
+###########
+
+Connexió wlan entre pcs + 1 router NAT (per proporcionar connexió a internet)
+
+whireshark --> analitzador de red. S'enganxa a una red i analitza tots els missatges que s'intercanviin per aquella interficie.
+
+1 - Configurem la xarxa sense fils
+	Configurem l'identificador de xarxa
+	El punt d'acces és el que faria de switch en una xarxa sense fils
+
+	amb iwconfig podem donar com a parametre la clau i la carxa en la que ens volem conectar
+	(tmb ens podrem connectar mitjançant l'entorn gràfic, epro sempre intentara configurar automaticament el nivell de xarxa ip, i el que fa és llençar un client de DHCP)
+	identificarem la nostra xarxa amb 192.168.18.0/24
+

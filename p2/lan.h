@@ -6,6 +6,14 @@
 typedef void (*lan_callback_t)(void);
 typedef uint8_t * missatge_lan_t;
 
+typedef struct {
+  uint8_t origen;
+  uint8_t desti;
+  uint8_t payload[30];
+} lanpdu_t;
+
+
+
 void lan_init(uint8_t no);
 
 bool lan_can_put(void);

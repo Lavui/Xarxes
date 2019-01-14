@@ -59,7 +59,9 @@ fusionem dos interficies en una mitjançant un bridge
 observem que estan fusionades
 "brctl show"
 
-sudo ifconfig br0 up (buscar l'equivalent d'aquesta commanda amb la eina "ip")
+"sudo ifconfig br0 up" (buscar l'equivalent d'aquesta commanda amb la eina "ip") -->equivalent :  	"sudo ip link add name br0 type bridge"
+			"sudo ip link set br0 up"
+			
 
 ara el yasser i el david ja es poden parlar
 pd: el paco ja no te adressa ip perque es comporta com un switch
@@ -68,6 +70,8 @@ pd: el paco ja no te adressa ip perque es comporta com un switch
 creem adreça per la maquina del paco -->"sudo ip address add 192.168.3.10/24 dev br0"
 
 commanda "mtr" permet saber tots els salts per on van passant els diferents routers fins al final
+
+
 
 
 
