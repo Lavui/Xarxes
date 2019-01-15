@@ -21,3 +21,22 @@ void lan_init(uint8_t no){
   queue_empty(&L);
   timer_every(TIMER_MS(5000),checking_queue)
 }
+
+static void message_for_me(void){
+  lan_pdu_t trama;
+  ether_block_get(trama); //agafar trama de la CF
+  if ((node_origen==trama[0]) && (crc_is_ok(trama[2:]) && lan_cb!=NULL){
+      missatge=trama;// segur?¿
+      lan_cb();
+    }
+}
+
+static void checking_queue(void){
+  lan_pdu_t trama;
+  if (queue_is_empty(&H)){
+    if (ether_can_put()){
+      
+    }
+  }
+}
+    
