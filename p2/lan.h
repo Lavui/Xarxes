@@ -8,7 +8,7 @@ typedef struct {
   uint8_t origen;
   uint8_t desti;
   uint8_t payload[30];
-} lanpdu_t;
+} lan_pdu_t;
 
 typedef enum{
   high,
