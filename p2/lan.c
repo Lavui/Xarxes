@@ -19,7 +19,7 @@ void lan_init(uint8_t no){
   node_origen=no;
   queue_empty(&H);
   queue_empty(&L);
-  timer_every(TIMER_MS(5000),checking_queue)
+  timer_every(TIMER_MS(5000),clear_queue)
 }
 
 static void message_for_me(void){
@@ -31,13 +31,26 @@ static void message_for_me(void){
     }
 }
 
-static void checking_queue(void){
+static void clear_queue(void){
+  //Es una funció de callback que cada x temps (el marcat en el timer very) mirara si hi ha elements a la cua si nhi ha ho precessa i els desencua, sino no fa res
   lan_pdu_t trama;
   if (!queue_is_empty(&H)){
     if (ether_can_put()){
-      queue_front
+      queue_front(&H);
+      add_crc((missatge_lan_t)&trama);
+      ether_block_put((missatge_lan_t)&trama);
+      queue_dequeue(&H);
     }
   }
+  else
+    if (!queue_is_empty(&L)){
+      if (ether_can_put()){
+	queue_front(&L);
+	add_crc((missatge_lan_t)&trama);
+	ether_block_put((missatge_lan_t)&trama);
+	queue_dequeue(&L);
+      }
+    }
 }
     
 bool lan_can_put(lan_buffer_t priority){
