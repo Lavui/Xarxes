@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pbn.h>
 #include "lan.h"
+#include "queue_t"
 #include "error_morse.h"
 
 static queue_t High,Low;
@@ -36,7 +37,7 @@ static void clear_queue(void){
   lan_pdu_t trama;
   if (!queue_is_empty(&High)){
     if (ether_can_put()){
-      queue_front(&High);
+      queue_front(&High,&trama);
       add_crc((missatge_lan_t)&trama);
       ether_block_put((missatge_lan_t)&trama);
       queue_dequeue(&High);
@@ -45,7 +46,7 @@ static void clear_queue(void){
   else
     if (!queue_is_empty(&Low)){
       if (ether_can_put()){
-	queue_front(&Low);
+	queue_front(&Low,&trama);
 	add_crc((missatge_lan_t)&trama);
 	ether_block_put((missatge_lan_t)&trama);
 	queue_dequeue(&Low);
@@ -89,10 +90,10 @@ void on_lan_received(lan_callback_t l){
 }
 
 uint8_t lan_block_get(missatge_lan_t m){
-  for (int i=0; msg[i]!='\0'; i++){
-    m[i]=msg[i+2];
+  for (int i=0; missatge[i]!='\0'; i++){
+    m[i]=missatge[i+2];
   }
   m[i]='\0';
-  return msg[0]
+  return misssatge[0]
 }
  
