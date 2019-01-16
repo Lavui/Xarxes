@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct {
+  uint8_t high, low;
+}check;
+
+redundancia_t add_check(uint8_t string[]);
+
+bool check_is_ok(uint8_t string[]);
+
+redundancia_t add_crc(uint8_t string[]);
+
+bool crc_is_ok(uint8_t string[]);

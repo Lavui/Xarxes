@@ -1,167 +1,105 @@
-#include "error_morse.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
 #include <util/crc16.h>
-#include <stdio.h>//Pel joc de proves (borrar al acabar)
+#include "error_morse.h"
 
-#define INICI_CRC 0
 
- /*####################  Checksum   ###############################*/
+/* ########## checksum ########## */
 
-check add_check(char p[]){
-  uint16_t suma=0,carry,rest;
+check add_check(uint8_t string[]){
+  uint8_t sum=0;
+  int c;
+  check x;
+  for(c=0; string[c]!='\0'; c++)
+    sum+=string[c];
+  x=byte2hex(sum);
+  string[c]=x.L;
+  string[c+1]=x.H;
+  string[c+2]='\0';
+  return x;
+}
+
+
+
+bool check_is_ok(uint8_t string[]){
+  int a,b;
+  a=hex2byte(get_redun(string));
+  b=hex2byte(add_check(string));
+  get_redun(string);
+  return a==b;
+}
+
+
+/* ########## crc ########## */
+
+check add_crc(uint8_t string[]){
+  uint8_t crc=0;
+  int c;
+  check x;
+  for(c=0;string[c]!='\0';c++)
+    crc=_crc_ibutton_update(crc,string[c]);
+  x=byte2hex(crc);
+  string[c]=x.L;
+  string[c+1]=x.H;
+  string[c+2]='\0';
+  return x;
+}
+
+bool crc_is_ok(uint8_t string[]){
+  int a,b;
+  a=hex2byte(get_redun(string));
+  b=hex2byte(add_crc(string));
+  get_redun(string);
+  return a==b;
+}
+
+/* ################## get redun ############## */
+
+check get_redun(uint8_t string[]){
+  int i;
+  check x;
+  for(i=0;string[i]!='\0';i++);
+  x.H=string[i-1];
+  x.L=string[i-2];
+  string[i-2]='\0';
+  return x;
+}
+
+/* ################## aux ############## */
+
+
+check byte2hex(uint8_t sum){
+  uint8_t mask1=0x0F;
+  uint8_t mask2=0xF0;
+  check x;
   
-  uint8_t che_bin;
+  x.L=mask1 & ~sum;
+  x.H=mask2 & ~sum;
+  x.H=x.H >> 4;
   
-  check che_hex;
-  int j=0;
-  static char s_check[254];
+  if ((x.L <= 0xF) && (x.L >=0xA))
+      x.L+='A'-10;
+  else if ((x.L <= 0x9) && (x.L >=0x0))
+      x.L+='0';
   
-  for (uint8_t i=0; p[i]; i++){ // funcio sumadora checksum
-    if ((p[i]>='A' && p[i]<='Z') || (p[i]>='0' && p[i]<='9') || (p[i]==' ')){
-      suma+=p[i];
-      j++;
-      
-    }
+  if ((x.H <= 0xF) && (x.H >= 0xA))
+      x.H+='A'-10;
+  else if ((x.H <= 0x9) && (x.H >=0x0))
+      x.H+='0';
+  return x;    
+}
+
+uint8_t hex2byte(check x){
+  if( (x.L <= 'F') && (x.L >= 'A')){
+      x.L-='A';}
+  else if( (x.L <= '9') && (x.L >='0')){
+      x.L-='0';}
+  if ((x.H <= 'F') && (x.H >= 'A')){
+      x.H-='A';}
+  else if ((x.H <= '9') && (x.H >='0')){
+      x.H-='0';}
+  return x.L+(x.H<<4);
   }
-  rest = suma & 0x00FF;
-  carry = suma & 0xFF00;
-  carry = carry >> 8;
-  che_bin = ~(carry + rest); // checksum en binari
-  che_hex=byte2hex(che_bin);
-  
-  p[j] = che_hex.H;
-  p[j+1] = che_hex.L;
-  p[j+2] = '\0';
-  s_check[0]=che_hex.H;
-  s_check[1]=che_hex.L;
-  
-  return che_hex;
-}
 
-
-check get_redun(char p[]){
-  int longi=0;
-  check ex;
-  while(p[longi]!='\0')
-    longi++;
-
-  ex.H=p[longi-2];
-  ex.L=p[longi-1];
-  p[longi-2]='\0';
-  return ex;
-}
-
-
-bool check_is_ok(char strche[]){  
-  check c1,c2;
-  c1 = get_redun(strche);
-  c2 = add_check(strche);
-  if (c1.H == c2.H && c1.L == c2.L){
-    printf("is ok (CHK)\n");
-    return true;
-   
-      }
-  else
-    printf("NO ok (CHK)\n");
-    return false;
-}
-
-/*####################  CRC   ###############################*/
-
-check add_crc(char p[]){
-  uint8_t  crc=INICI_CRC, j=0;
-  check crc_hex;
-
-  while(p[j]!='\0'){
-    crc=_crc_ibutton_update(crc,p[j]);
-    j++
-  }
-  if (p[0]!='\0'){
-    crc_hrx=byte2hex(crc);
-    p[j]=crc_hex.H;
-    p[j+1]=crc_hex.L;
-    p[j+3]='\0';
-  }
-  else{
-    crc_hex.H='\0';
-    crc_hex.L='\0';
-  }
-  //printf("")
-  return crc_hex;
-}
-
-
-bool crc_is_ok(char p[]){
-  check c1,c2;
-
-  c1=get_redun(p);
-  c2=add_crc(p);
-  if (c1.H == c2.H && c1.L == c2.L){
-    printf("is ok (CRC)\n");
-    return true;
-   
-  }
-  else
-    printf("NO ok (CRC)\n");
-  return false;
-}
-
-/*##############  funcions auxiliars   #############################*/
-
- static check byte2hex(uint8_t byte){
-  check hex;
-  uint8_t H=byte>>4;
-  uint8_t L=byte & 0b00001111;
-  if(H>=0x0A && H<=0x0F)
-    H+=55;
-  else
-    H+=48;
-
-  if(L>=0x0A && L<=0x0F)
-    L+=55;
-  else
-    L+=48;
-  hex.H=H;
-  hex.L=L;
-  return hex;
-}
-
-
-static uint8_t hex2byte(check hex){
-  uint8_t maj, men;
-  if (hex.H>=0x41 && hex.H<=0x5A)
-    hex.H-=55;
-  else
-    hex.H-=48;
-
-  if (hex.L>=0x41 && hex.L<=0x5A)
-    hex.L-=55;
-  else
-    hex.L-=48;
-  //printf("%i L \n",hex.L);
-
-  maj=hex.H<<4;
-  men=hex.L & 0b00001111;
-  //printf("%i maj | %i men = %i\n",maj,men,maj|men);
-
-  return maj|men;
-}
-
-/*#############  main de proves   ############################*/
-
-
-void main(){
-  check hexad;
-  //hexad.L=0x0F;
-  //hexad.H=0x00;
-  //printf("%i\n",hex2byte(hexad)); // prova hex2byte
-
-  //uint8_t byt= 0b01010101;
-  //printf("%i\n",hex2byte(byte2hex(byt))); // prova byte2hex
-  char p[255]="HOLA";
-  //printf("%s 1\n",p);
-  //printf("%s 3\n", p);
-  add_check(p);
-  check_is_ok(p);
-}
 

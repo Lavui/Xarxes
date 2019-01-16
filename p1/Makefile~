@@ -1,0 +1,33 @@
+CC=avr-gcc
+CPPFLAGS=-DF_CPU=16000000UL
+CFLAGS=-Wall -std=c99 -Os -mmcu=atmega328p -fshort-enums -Ilibpbn
+LDFLAGS=-mmcu=atmega328p -std=c99
+PORT=/dev/ttyACM0
+
+vpath lib% libpbn
+
+test_error_PC: gcc test_error_PC.c error_morse.c -o test
+
+test_error_AVR: error_morse.o -lpbn
+test_error_AVR.o: error_morse.h 
+
+
+
+%.hex: %
+	avr-objcopy -Oihex $< $@	
+
+i-%: %.hex
+	avrdude -c arduino -P $(PORT) -p atmega328p -U $<
+
+.PHONY:libpbn
+libpbn:
+	$(MAKE) -C libpbn
+
+.PHONY:clean veryclean
+clean:
+	\rm -f *~ *.o *.s *.hex
+	$(MAKE) -C libpbn clean
+veryclean: clean
+	\rm -f master experiment1 experiment2 test_ether1 test_ether2 slave chrono_test
+	$(MAKE) -C libpbn veryclean
+
