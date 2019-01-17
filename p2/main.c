@@ -15,5 +15,10 @@ int main(void){
   NO=serial_get();
   cli();
   lan_init(NO);
-  
+  sei();
+  on_lan_received(recepcio);
+  while(1){
+    enviaments();
+  }
+  return 0;
 }

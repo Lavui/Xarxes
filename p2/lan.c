@@ -77,10 +77,10 @@ void lan_block_put(const missatge_lan_t m, uint8_t nd, lan_buffer_t prioritat){
   }
   trama.payload[i]='\0'; //trama completa (faltarien el no i nd que s'afegeix en el enqueue)
   if (prioritat==high){
-    queue_enqueue(&Hih,&trama); //enquem trama al 100%
+    queue_enqueue(&Hih,trama); //enquem trama al 100%
   }
   else{
-    queue_enqueue(&Low,&trama);
+    queue_enqueue(&Low,trama);
   }
 }
 
@@ -90,10 +90,11 @@ void on_lan_received(lan_callback_t l){
 }
 
 uint8_t lan_block_get(missatge_lan_t m){
+  //retorna l'adreça origen
   for (int i=0; missatge[i]!='\0'; i++){
     m[i]=missatge[i+2];
   }
   m[i]='\0';
-  return misssatge[0]
+  return missatge[0];
 }
  

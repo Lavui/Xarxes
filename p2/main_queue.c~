@@ -1,0 +1,14 @@
+#include "queue_t.h"
+#include "lan.h"
+int main(void){
+  lan_pdu_t trama;
+  trama.origen=1;
+  trama.desti=2;
+  trama.payload="HOLA";
+  queue_t cua;
+  if (queue_empty(cua))
+    printf("cua buidada");
+  if (queue_is_empty(cua)){
+    printf("cua buida");
+    queue_enqueue(&cua,&trama)
+}
