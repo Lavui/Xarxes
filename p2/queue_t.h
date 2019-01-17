@@ -13,18 +13,18 @@ typedef struct {
   int rear;
   int count;
   lan_pdu_t elements[MAXPDU];
-}queue_t;
+}queue_p;
 
-void queue_empty(queue_t *const q);
+void queue_t_empty(queue_p *const q);
 
-bool queue_is_empty(const queue_t *const q);
+bool queue_t_is_empty(const queue_p *const q);
 
-bool queue_is_full(const queue_t *const q);
+bool queue_t_is_full(const queue_p *const q);
 
-void queue_enqueue(queue_t *const q, lan_pdu_t v);
+void queue_t_enqueue(queue_p *const q, lan_pdu_t v);
 
-void queue_dequeue(queue_t *const q);
+void queue_t_dequeue(queue_p *const q);
 
-void queue_front(const queue_t *const q, lan_pdu_t *a);
+void queue_t_front(const queue_p *const q, lan_pdu_t *a);
 
 #endif
