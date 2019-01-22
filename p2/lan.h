@@ -2,7 +2,7 @@
 #define LAN_H
 
 #include <inttypes.h>
-#include <stdbool.h>
+#include <pbn.h>
 
 typedef struct {
   uint8_t origen;

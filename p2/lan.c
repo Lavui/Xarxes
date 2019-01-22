@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <pbn.h>
-#include "lan.h"
 #include "queue_t.h"
+#include "lan.h"
 #include "error_morse.h"
+#include <avr/interrupt.h>
 
 static queue_p High,Low;
 
@@ -16,7 +18,7 @@ static lan_callback_t lan_cb=NULL;
 static void message_for_me(void){
   uint8_t trama[32];
   ether_block_get(trama); //agafar trama de la CF
-  if ((node_origen==trama[0]) && (crc_is_ok(trama)) && lan_cb!=NULL){
+  if ((node_origen==trama[1]) && (crc_is_ok(trama)) && lan_cb!=NULL){
       missatge=trama;
       lan_cb();
     }
@@ -51,7 +53,7 @@ void lan_init(uint8_t no){
   node_origen=no;
   queue_t_empty(&High);
   queue_t_empty(&Low);
-  timer_every(TIMER_MS(5000),clear_queue);
+  timer_every(TIMER_MS(1000),clear_queue);
 }
 
 
@@ -62,10 +64,9 @@ bool lan_can_put(lan_buffer_t prioritat){
     if (!queue_t_is_full(&High))
       return true;
   }
-  else{
+  else
     if(!queue_t_is_full(&Low))
       return true;
-  }
   return false;
 }
 

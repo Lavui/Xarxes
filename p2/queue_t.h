@@ -7,12 +7,12 @@
 #include "lan.h"
 
 #define MAXCUA 10
-#define MAXPDU 10
+
 typedef struct {
   int front;
   int rear;
   int count;
-  lan_pdu_t elements[MAXPDU];
+  lan_pdu_t elements[MAXCUA];
 }queue_p;
 
 void queue_t_empty(queue_p *const q);
