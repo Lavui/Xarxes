@@ -8,7 +8,7 @@
 
 
 check byte2hex(uint8_t sum){
-  uint8_t mask1=0x0F;
+	uint8_t mask1=0x0F;
   uint8_t mask2=0xF0;
   check x;
   
@@ -17,26 +17,26 @@ check byte2hex(uint8_t sum){
   x.H=x.H >> 4;
   
   if ((x.L <= 0xF) && (x.L >=0xA))
-      x.L+='A'-10;
+	  x.L+='A'-10;
   else if ((x.L <= 0x9) && (x.L >=0x0))
-      x.L+='0';
+	  x.L+='0';
   
   if ((x.H <= 0xF) && (x.H >= 0xA))
-      x.H+='A'-10;
+	  x.H+='A'-10;
   else if ((x.H <= 0x9) && (x.H >=0x0))
-      x.H+='0';
-  return x;    
+	  x.H+='0';
+  return x;	
 }
 
 uint8_t hex2byte(check x){
   if( (x.L <= 'F') && (x.L >= 'A')){
-      x.L-='A';}
+	  x.L-='A';}
   else if( (x.L <= '9') && (x.L >='0')){
-      x.L-='0';}
+	  x.L-='0';}
   if ((x.H <= 'F') && (x.H >= 'A')){
-      x.H-='A';}
+	  x.H-='A';}
   else if ((x.H <= '9') && (x.H >='0')){
-      x.H-='0';}
+	  x.H-='0';}
   return x.L+(x.H<<4);
   }
 /* ################## get redun ############## */
@@ -59,7 +59,7 @@ check add_check(uint8_t string[]){
   int c;
   check x;
   for(c=0; string[c]!='\0'; c++)
-    sum+=string[c];
+	sum+=string[c];
   x=byte2hex(sum);
   string[c]=x.L;
   string[c+1]=x.H;
@@ -85,7 +85,7 @@ check add_crc(uint8_t string[]){
   int c;
   check x;
   for(c=0;string[c]!='\0';c++)
-    crc=_crc_ibutton_update(crc,string[c]);
+	crc=_crc_ibutton_update(crc,string[c]);
   x=byte2hex(crc);
   string[c]=x.L;
   string[c+1]=x.H;

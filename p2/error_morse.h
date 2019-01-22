@@ -15,6 +15,5 @@ check add_crc(uint8_t str[]);
 
 bool crc_is_ok(uint8_t str[]);
 
-
 #endif
 

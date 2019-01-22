@@ -9,10 +9,10 @@
 #define MAXCUA 10
 
 typedef struct {
-  int front;
-  int rear;
-  int count;
-  lan_pdu_t elements[MAXCUA];
+	int front;
+	int rear;
+	int count;
+	lan_pdu_t elements[MAXCUA];
 }queue_p;
 
 void queue_t_empty(queue_p *const q);

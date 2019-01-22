@@ -5,14 +5,14 @@
 #include <pbn.h>
 
 typedef struct {
-  uint8_t origen;
-  uint8_t desti;
-  uint8_t payload[30];
+	uint8_t origen;
+	uint8_t desti;
+	uint8_t payload[30];
 } lan_pdu_t;
 
 typedef enum{
-  high,
-  low
+	high,
+	low
 }lan_buffer_t;
 
 typedef void (*lan_callback_t)(void);
