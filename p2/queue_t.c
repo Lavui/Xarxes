@@ -4,7 +4,6 @@
 #include <avr/io.h>
 #include <util/atomic.h>
 #include "queue_t.h"
-#include "lan.h"
 #include <pbn.h>
 
 void queue_t_empty(queue_p *const q){

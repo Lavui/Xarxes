@@ -1,6 +1,5 @@
 #include <string.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <util/crc16.h>
 #include "error_morse.h"
 

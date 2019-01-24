@@ -23,16 +23,16 @@ static void recepcio(void){
 
 void enviament(void){
 	int i;
-	char enviament[33]="";
+	char env[33]="";
 	uint8_t missatge[30];
-	readline(enviament,34);
-	for(i=2; enviament[i]!='\0'; i++){
-		missatge[i-2]=enviament[i];
+	readline(env,34);
+	for(i=2; env[i]!='\0'; i++){
+		missatge[i-2]=env[i];
 	}
 	missatge[i-2]='\0';
 	if (lan_can_put(DEFAULT_PRIORITY)){ /* Donem prioritat baixa per defecte */
 		//print((char *)enviament);
-		lan_block_put(missatge, enviament[0],DEFAULT_PRIORITY);}
+		lan_block_put(missatge, env[0],DEFAULT_PRIORITY);}
 }
 
 int main(void){

@@ -1,0 +1,15 @@
+avr-gcc -Wall -std=c99 -Os -mmcu=atmega328p -fshort-enums -Ilibpbn -DF_CPU=16000000UL  -c -o error_morse.o error_morse.c
+
+avr-gcc -Wall -std=c99 -Os -mmcu=atmega328p -fshort-enums -Ilibpbn -DF_CPU=16000000UL  -c -o lan.o lan.c
+
+avr-gcc -Wall -std=c99 -Os -mmcu=atmega328p -fshort-enums -Ilibpbn -DF_CPU=16000000UL  -c -o queue_t.o queue_t.c
+
+avr-gcc -Wall -std=c99 -Os -mmcu=atmega328p -fshort-enums -Ilibpbn -DF_CPU=16000000UL  -c -o main.o main.c
+
+avr-gcc -mmcu=atmega328p -std=c99 error_morse.o lan.o queue_t.o main.o libpbn.a   -o prova
+
+avr-objcopy -Oihex prova prova.hex
+
+sudo avrdude -c arduino -p m328p -P /dev/ttyACM0 -U prova.hex
+
+cutecom

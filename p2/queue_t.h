@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include "lan.h"
 
-#define MAXCUA 10
+#define MAXCUA 2
 
 typedef struct {
 	int front;
